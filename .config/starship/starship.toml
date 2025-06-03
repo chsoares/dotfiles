@@ -7,6 +7,7 @@ $hostname\
 $directory\
 $git_branch\ 
 $git_status\
+···\
 $cmd_duration\
 $time\
 $line_break\
@@ -87,7 +88,7 @@ format = "· [󰝰 $path]($style) "
 disabled = false
 symbol = "  "
 style = "yellow"
-format = "· [$symbol$branch]($style) "
+format = "· [$symbol$branch]($style)"
 
 # Shows current git status
 [git_status]
@@ -103,7 +104,7 @@ modified = ' '
 staged = '[++\($count\)](green)'
 renamed = '襁 '
 deleted = ' '
-format = '[($all_status$ahead_behind)]($style) '
+format = '[( $all_status$ahead_behind)]($style)'
 
 # Show Python virtualenv if active
 [python]
@@ -120,7 +121,7 @@ format = "[($environment )]($style)"
 # Show time on the right
 [time]
 disabled = false
-format = "[· [](pink) $time]($style)"
+format = "[ [](pink) $time]($style)"
 time_format = "%R"
 style = "white"
 
@@ -135,4 +136,4 @@ disabled = false
 [cmd_duration]
 min_time = 500
 style = "yellow"
-format = '· [$duration]($style)'
+format = ' [$duration ]($style)'

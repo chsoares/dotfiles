@@ -101,8 +101,25 @@ cd() {
     fi
 }
 
+# Título
+preexec() {
+  local words=("${(z)1}")  # quebra o comando preservando aspas e escapes
+  LAST_CMD=""
+
+  for word in "${words[@]}"; do
+    [[ "$word" == -* ]] && break
+    LAST_CMD+=" $word"
+  done
+
+  # Remove espaço inicial
+  LAST_CMD="${LAST_CMD## }"
+
+  print -Pn "\e]0;%n@%m: %~ :: ${LAST_CMD}\a"  
+}
+
+precmd() {
+  print -Pn "\e]0;%n@%m: %~ :: ${LAST_CMD}\a"  
+}
 
 # fastfetch
-clear
-echo ""
 fastfetch
