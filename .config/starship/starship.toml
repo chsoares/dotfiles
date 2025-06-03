@@ -7,12 +7,19 @@ $hostname\
 $directory\
 $git_branch\ 
 $git_status\
-$fill\
 $cmd_duration\
+·\
 $time\
 $line_break\
 $python\
-$character"""
+$character
+"""
+
+#right_format = """
+#$cmd_duration\
+#$time
+#"""
+
 
 # Use a two-line prompt like Powerlevel10k
 add_newline = true
@@ -33,13 +40,13 @@ orange = "#FFA800"
 
 # Character that shows up at the start of the prompt ❯
 [character]
-success_symbol = "[❯](purple)"
+success_symbol = "[❯](blue)"
 error_symbol = "[❯](red)"
 
 # Show OS icon using NerdFont
 [os]
 disabled = false
-style = "orange"
+style = "bold pink"
 format = "[$symbol]($style) "
 
 [os.symbols]
@@ -50,20 +57,21 @@ Arch = "󰣇"
 Debian = "󰣚"
 Macos = "󰀵"
 Linux = "󰌽"
+Kali = ""
 
 # Show username and hostname in format user@host
 [username]
 disabled = false
 show_always = true
-style_user = "white"
-style_root = "red"
+style_user = "bold white"
+style_root = "bold white"
 format = "[$user]($style)"
 
 [hostname]
 ssh_only = false
 disabled = false
-style = "white"
-format = "[[@](purple)$hostname]($style) "
+style = "bold white"
+format = "[[@](bold red)$hostname]($style) "
 
 # Show the current directory with folder icon
 [directory]
@@ -72,7 +80,7 @@ truncation_symbol = "…/"
 home_symbol = '󰋜 ~'
 read_only_style = '197'
 read_only = '  '
-style = "orange"
+style = "blue"
 format = "· [󰝰 $path]($style) "
 
 # Show git branch and status
@@ -113,7 +121,7 @@ format = "[($environment )]($style)"
 # Show time on the right
 [time]
 disabled = false
-format = "[ [](purple) $time]($style)"
+format = "[ [](pink) $time]($style)"
 time_format = "%R"
 style = "white"
 

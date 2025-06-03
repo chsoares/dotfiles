@@ -1,9 +1,8 @@
+#!/bin/zsh
+
 # Carregar o Starship como Prompt
 export STARSHIP_CONFIG=~/.config/starship/starship.toml
 eval "$(starship init zsh)"
-
-# Carregar o brew
-eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
 
 # Carregar o fzf
 eval "$(fzf --zsh)"
@@ -23,7 +22,7 @@ zstyle ':completion:*' menu no
 
 zstyle ':fzf-tab:complete:*' fzf-preview '
   if [[ -d $realpath ]]; then
-    ls --color=auto "$realpath"
+    ls -A --color=auto "$realpath"
   elif [[ -f $realpath ]]; then
     cat "$realpath"
   fi'
@@ -69,6 +68,12 @@ alias bat='batcat --paging=never'
 # Ativar plugins essenciais
 source ~/.zsh/zsh_plugins.sh
 
+# Ativar aliases etc
+source ~/.zsh/zsh_aliases
+source /opt/ezpz/ezpz.sh
+bash -c "setxkbmap -model abnt2 -layout br"
+source ~/.zsh/zsh_env
+
 # Ativar venv
 cd() {
     # Usa o cd interno do shell; se falhar, sai da função.
@@ -94,49 +99,6 @@ cd() {
             deactivate
         fi
     fi
-}
-
-
-# Ativa/desativa o dev.copic.app
-dev() {
-    echo ""
-    echo -e "\033[0;36m[*]\033[0m Gerenciando ambiente de desenvolvimento \033[0;33mdev.copic.app\033[0m"
-    echo ""
-
-    case "$1" in
-        start)
-            echo -e "\033[0;36m[*]\033[0m Navegando até \033[0;33m/opt/copic.app-dev\033[0m"
-            cd /opt/copic.app-dev || { echo -e "\033[0;31m[!]\033[0m Falha ao acessar /opt/copic.app-dev"; return 1; }
-
-            echo -e "\033[0;36m[*]\033[0m Atualizando repositório..."
-            git pull || { echo -e "\033[0;31m[!]\033[0m Erro ao executar git pull"; return 1; }
-
-            echo -e "\033[0;36m[*]\033[0m Iniciando o serviço \033[0;33mstreamlit-dev\033[0m"
-            sudo systemctl start streamlit-dev
-
-            echo ""
-            echo -e "\033[1;33mAmbiente de desenvolvimento iniciado com sucesso! 🚀\033[0m"
-            ;;
-
-        stop)
-            echo -e "\033[0;36m[*]\033[0m Parando o serviço \033[0;33mstreamlit-dev\033[0m"
-            sudo systemctl stop streamlit-dev
-
-            echo ""
-            echo -e "\033[1;33mAmbiente de desenvolvimento desligado. 🔌\033[0m"
-            ;;
-
-        status)
-            echo -e "\033[0;36m[*]\033[0m Verificando status do serviço..."
-            sudo systemctl status streamlit-dev --no-pager | head -n 3
-
-            echo ""
-            ;;
-
-        *)
-            echo -e "\033[0;31m[!]\033[0m Uso: dev {start|stop|status}"
-            ;;
-    esac
 }
 
 

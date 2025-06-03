@@ -1,0 +1,211 @@
+#!/bin/zsh
+#-----------
+# FUNCTIONS
+#-----------
+
+## start box
+start() {
+    boxname=$1
+    boxip=$2
+     
+    if [[ -z "$boxname" || -z "$boxip" ]]; then
+        echo "[!] Usage: start <boxname> <boxip>"
+        return 1
+    fi
+    
+    echo ""
+    
+    echo "\033[0;36m[*]\033[0m Created directory at \033[0;33m~/lab/$boxname\033[0m"
+    cd ~/lab; mkdir 0_$boxname 2>/dev/null; cd 0_$boxname
+    
+    echo ""
+    
+    echo "kali=$(ip a | grep tun0 | grep -oE "[0-9]*\.[0-9]*\.[0-9]*\.[0-9]*")" > ./$boxname.zsh
+    echo "box=$boxname" >> ./$boxname.zsh
+    echo "ip=$boxip" >> ./$boxname.zsh
+    #echo "host=$boxname.htb" >> ./$boxname.zsh
+    echo "url=http://$boxname.htb" >> ./$boxname.zsh
+    echo "boxpwd=$(pwd)" >> ./$boxname.zsh
+    
+    cat ./$boxname.zsh > ~/.zsh/zsh_env
+    source ~/.zsh/zsh_env
+             
+    echo "\033[0;36m[*]\033[0m \033[0;33m\$kali \033[0mis set to $(echo $kali)"
+    echo "\033[0;36m[*]\033[0m \033[0;33m\$ip \033[0mis set to $boxip"
+    echo "\033[0;36m[*]\033[0m \033[0;33m\$box \033[0mis set to $box"    
+    echo "\033[0;36m[*]\033[0m \033[0;33m\$url \033[0mis set to http://$box.htb"
+    echo ""
+        
+    addhost $ip $box.htb 
+    
+    echo ""
+    
+    echo "\033[0;36m[*]\033[0m Trying to sync time with target box"
+    ntpdate $ip #2>/dev/null
+       
+    echo ""
+    echo "\033[1;33mHappy hacking! :) \033[0m"
+}
+
+## ZSH_ENV
+
+zshenv() {
+    if [[ $# -eq 0 ]]; then
+        cat ~/.zsh/zsh_env
+    elif [[ $1 == "add" ]]; then
+        shift 
+        echo "$@" >> $boxpwd/$box.zsh
+        cat $boxpwd/$box.zsh > ~/.zsh/zsh_env
+    elif [[ $1 == "edit" ]]; then
+        mousepad $boxpwd/$box.zsh
+        cat $boxpwd/$box.zsh > ~/.zsh/zsh_env
+    elif [[ $1 == "set" ]]; then
+        shift
+        cat $1 > ~/.zsh/zsh_env
+        source ~/.zsh/zsh_env
+        echo "\033[0;36m[*]\033[0m \033[0;33m\$kali \033[0mis set to $(echo $kali)"
+        echo "\033[0;36m[*]\033[0m \033[0;33m\$ip \033[0mis set to $boxip"
+        echo "\033[0;36m[*]\033[0m \033[0;33m\$box \033[0mis set to $box"    
+        echo "\033[0;36m[*]\033[0m \033[0;33m\$url \033[0mis set to http://$box.htb"
+        addhost $ip $box.htb
+        echo "\033[0;36m[*]\033[0m Trying to sync time with target box"
+        ntpdate $ip #2>/dev/null
+    else
+        echo "Invalid command. Use 'set', 'edit' or 'add' -- or no arguments to print current envs."
+    fi
+}
+
+# Hosts
+addhost() {
+    if [ "$#" -ne 2 ]; then
+      echo "[i] Usage: addhost <ip> <hostname>"
+      return 1
+    fi
+
+    local ip="$1"
+    local hostname="$2"
+    if grep -q "^$ip" /etc/hosts; then
+      sudo sed -i "/^$ip/s/$/ $hostname/" /etc/hosts
+      echo "\033[0;36m[*]\033[0m Appended \033[0;33m$hostname\033[0m to existing entry for \033[0;33m$ip\033[0m in /etc/hosts"
+    else
+      echo "$ip    $hostname" | sudo tee -a /etc/hosts > /dev/null
+      echo "\033[0;36m[*]\033[0m Added new entry \033[0;33m$ip $hostname\033[0m to /etc/hosts"
+    fi
+
+    grep "^$ip" /etc/hosts --color=never
+}
+
+## cleanup
+cleanup() {
+    cd ~/lab
+    mv $boxpwd ~/lab/$box 2>/dev/null
+    sed -i 's/0_//g' ~/lab/$box/$box.zsh
+    head -n 6 /etc/hosts > /etc/tmp && mv /etc/tmp /etc/hosts
+    #rm -f ~/lab/*
+    cat /dev/null > ~/.zsh/zsh_env 
+    ntpdate a.st1.ntp.br > /dev/null 2>&1
+}
+
+## Crack
+crack() {
+    echo $1 > crack.hash
+    john -w=$rockyou --format=${2:-*} crack.hash
+}
+
+## Ligolo
+alias ligolo='/opt/ligolo-ng/proxy -selfcert'
+
+ligtun() {
+    ip tuntap add user root mode tun "$1"
+    ip link set "$1" up
+    ip route add "$2" dev "$1"
+    ip route add 240.0.0.1/32 dev "$1" 
+}
+
+liglocal() {
+    ip tuntap add user root mode tun "$1"
+    ip link set "$1" up
+    ip route add 240.0.0.1/32 dev "$1" 
+}
+
+ligdel() {
+    ip tuntap del mode tun "$1"
+}
+
+
+## mkdir cd
+mkcd() {
+    mkdir $1; cd $1
+}
+
+## dedup
+dedup() {
+    sort -u "$1" -o "$1"
+}
+
+## xfreerdp
+rdp() {
+    xfreerdp /u:"$1" /p:"$2" /v:"$3" /cert:ignore /dynamic-resolution
+}
+
+
+#---------
+# ALIASES
+#---------
+
+## wordlists
+export rockyou='/usr/share/wordlists/rockyou.txt'
+export directory='/usr/share/wordlists/seclists/Discovery/Web-Content/directory-list-2.3-medium.txt'
+export usernames='/usr/share/wordlists/seclists/Usernames/xato-net-10-million-usernames.txt'
+export subdomains='/usr/share/seclists/Discovery/DNS/subdomains-top1million-110000.txt'
+export weblist='/usr/share/seclists/Discovery/weblist-chsoares.txt'
+
+## explorer
+alias hosts='mousepad /etc/hosts'
+alias lab='cd ~/lab'
+alias box='cd $boxpwd'
+alias oldpwd='cd $OLDPWD'
+alias clearhosts='head -n 6 /etc/hosts > /etc/tmp && mv /etc/tmp /etc/hosts'
+
+
+## http server
+alias transfer='cd /opt/transfer; ls; python3 -m http.server 80'
+alias www='ls; python3 -m http.server 80'
+
+## bloodhound
+alias bloodhound='cd /opt/BloodHound; docker-compose up -d; sleep 2; firefox localhost:8080'
+
+## sstiMap
+alias sstimap='/opt/SSTImap/sstimap.py -i'
+
+## tty
+pytty () {
+  echo "python3 -c 'import pty;pty.spawn(\"/bin/bash\")';python -c 'import pty;pty.spawn(\"/bin/bash\")'"| xclip -sel clip
+  echo "[+] Command copied to clipboard!"
+}
+scriptty() {
+    echo '/usr/bin/script -qc /bin/bash /dev/null'| xclip -sel clip
+    echo "[+] Command copied to clipboard!"
+}
+alias fixtty='stty raw -echo; fg; reset'
+
+## phpcmd
+alias phpcmd='echo "<?=\`\$_GET[0]\`?>" > cmd.php && echo "[+] Wrote <?=\`\$_GET[0]\`?> in cmd.php"'
+
+## autorecon no dirb
+alias autorecon='autorecon $ip --global.domain $host --exclude-tags=dirbuster'
+
+## sqlmap
+#alias sqlmap='sqlmap --batch --threads 10 --level 5'
+
+## aliases
+alias aliases='mousepad ~/.zsh_aliases'
+
+## unicorn
+alias unicorn='/opt/unicorn/unicorn.py'
+
+## codium
+alias code='code --no-sandbox --user-data-dir /home/kali'
+
+## penelope
+alias penelope='/opt/penelope/penelope.py -i tun0'
