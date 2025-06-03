@@ -1,0 +1,131 @@
+# Starship prompt configuration
+
+format = """
+$os\
+$username\
+$hostname\ 
+$directory\
+$git_branch\ 
+$git_status\
+$fill\
+$cmd_duration\
+$time\
+$line_break\
+$python\
+$character"""
+
+# Use a two-line prompt like Powerlevel10k
+add_newline = true
+palette = "pastel"
+
+[palettes.pastel]
+black = "#222222"
+blue = "#00AAFF"
+pink = "#FF79C6"
+green = "#00FFB2"
+purple = "#BD93F9"
+red = "#FF5555"
+white = "#F8F8F2"
+yellow = "#F1FA8C"
+cyan = "#54FFFF"
+orange = "#FFA800"
+
+
+# Character that shows up at the start of the prompt ❯
+[character]
+success_symbol = "[❯](purple)"
+error_symbol = "[❯](red)"
+
+# Show OS icon using NerdFont
+[os]
+disabled = false
+style = "orange"
+format = "[$symbol]($style) "
+
+[os.symbols]
+Windows = "󰍲"
+Ubuntu = ""
+Fedora = "󰣛"
+Arch = "󰣇"
+Debian = "󰣚"
+Macos = "󰀵"
+Linux = "󰌽"
+
+# Show username and hostname in format user@host
+[username]
+disabled = false
+show_always = true
+style_user = "white"
+style_root = "red"
+format = "[$user]($style)"
+
+[hostname]
+ssh_only = false
+disabled = false
+style = "white"
+format = "[[@](purple)$hostname]($style) "
+
+# Show the current directory with folder icon
+[directory]
+truncation_length = 5
+truncation_symbol = "…/"
+home_symbol = '󰋜 ~'
+read_only_style = '197'
+read_only = '  '
+style = "orange"
+format = "· [󰝰 $path]($style) "
+
+# Show git branch and status
+[git_branch]
+disabled = false
+symbol = "  "
+style = "yellow"
+format = "· [$symbol$branch]($style) "
+
+# Shows current git status
+[git_status]
+style = 'yellow'
+conflicted = '🏳'
+up_to_date = ''
+untracked = ' '
+ahead = '⇡${count}'
+diverged = '⇕⇡${ahead_count}⇣${behind_count}'
+behind = '⇣${count}'
+stashed = ' '
+modified = ' '
+staged = '[++\($count\)](green)'
+renamed = '襁 '
+deleted = ' '
+format = '[($all_status$ahead_behind )]($style)'
+
+# Show Python virtualenv if active
+[python]
+symbol = " "
+version_format = "v$major.$minor"
+disabled = false
+style = "green"
+format = "[$symbol($virtualenv )]($style)"
+
+[conda]
+style = "cyan"
+format = "[($environment )]($style)"
+
+# Show time on the right
+[time]
+disabled = false
+format = "[ [](purple) $time]($style)"
+time_format = "%R"
+style = "white"
+
+[fill]
+symbol = "·"
+style = "white"
+
+# Separator line
+[line_break]
+disabled = false
+
+[cmd_duration]
+min_time = 500
+style = "yellow"
+format = ' [$duration]($style)'

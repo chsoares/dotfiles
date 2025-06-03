@@ -1,0 +1,3 @@
+0 3 * * * cd /opt/copic.app && /opt/copic.app/venv/bin/python3 /opt/copic.app/scripts/ransom_dataset.py
+0 3 * * * cd /opt/copic.app && /opt/copic.app/venv/bin/python3 /opt/copic.app/scripts/vuln_dataset.py
+0 6 * * 0 /bin/bash /home/chsoares/cronjobs/push_datasets.sh 2>/home/chsoares/cronjobs/ransom_cron_errors.log
