@@ -4,6 +4,9 @@
 export STARSHIP_CONFIG=~/.config/starship/starship.toml
 eval "$(starship init zsh)"
 
+# Adicionar coisas ao PATH
+export PATH="$PATH:$HOME/go/bin"
+
 # Carregar o fzf
 eval "$(fzf --zsh)"
 export FZF_DEFAULT_OPTS="--ansi \
@@ -45,6 +48,7 @@ bindkey '^[OA' up-line-or-beginning-search   # Alternativa para terminais difere
 bindkey '^[OB' down-line-or-beginning-search # Alternativa para terminais diferentes
 bindkey '\e[1;5C' forward-word
 bindkey '\e[1;5D' backward-word
+bindkey '^?' backward-kill-word
 
 
 # Histórico do Zsh com pesquisa incremental
@@ -103,23 +107,12 @@ cd() {
 
 # Título
 preexec() {
-  local words=("${(z)1}")  # quebra o comando preservando aspas e escapes
-  LAST_CMD=""
+  local trimmed=("${(z)1}")
+  LAST_CMD="${trimmed[1]}"
 
-  for word in "${words[@]}"; do
-    [[ "$word" == -* ]] && break
-    LAST_CMD+=" $word"
-  done
-
-  # Remove espaço inicial
-  LAST_CMD="${LAST_CMD## }"
-
-  print -Pn "\e]0;%n@%m: %~ :: ${LAST_CMD}\a"  
+  print -Pn "\e]0;%n@%m :: ${LAST_CMD}\a"  
 }
 
 precmd() {
-  print -Pn "\e]0;%n@%m: %~ :: ${LAST_CMD}\a"  
+  print -Pn "\e]0;%n@%m :: ${LAST_CMD}\a"  
 }
-
-# fastfetch
-fastfetch
