@@ -115,4 +115,5 @@ preexec() {
 
 precmd() {
   print -Pn "\e]0;%n@%m :: ${LAST_CMD}\a"  
+  . ~/.zsh/zsh_env 2>/dev/null
 }
