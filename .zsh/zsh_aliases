@@ -216,3 +216,6 @@ alias penelope='/opt/penelope/penelope.py -i tun0'
 
 ## wpscan
 alias wpscan='wpscan --api-token $(cat /root/.wpscan.txt)'
+
+## winpayloads
+alias winpayloads='docker run -e LANG=C.UTF-8 --net=host -it charliedean07/winpayloads:1.0'
